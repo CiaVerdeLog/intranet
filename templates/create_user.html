@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criar Usuário</title>
+    <!-- Link do Bootstrap 4.5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Criar Novo Usuário</h2>
+
+        <form method="POST">
+            <div class="form-group">
+                <label for="identificacao">Identificação:</label>
+                <input type="text" class="form-control" id="identificacao" name="identificacao" required>
+            </div>
+
+            <div class="form-group">
+                <label for="senha">Senha:</label>
+                <input type="password" class="form-control" id="senha" name="senha" required>
+            </div>
+
+            <div class="form-group">
+                <label for="permissao">Permissão:</label>
+                <select class="form-control" id="permissao" name="permissao">
+                    <option value="Adm">Administrador</option>
+                    <option value="Rh">RH</option>
+                    <option value="User">Usuário</option>
+                    <option value="User">Interno</option>
+                    <option value="Motorista">Motorista</option>
+                </select>
+            </div>
+
+            <div class="form-group text-center">
+                <button type="submit" class="btn btn-success">Cadastrar</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Scripts do Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

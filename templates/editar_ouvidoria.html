@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Registro de Ouvidoria</title>
+</head>
+<body>
+    <h2>Editar Registro de Ouvidoria</h2>
+    <a href="{{ url_for('ouvidoria') }}">Voltar à Lista de Registros</a><br><br>
+
+    <form method="POST">
+        <label for="nome">Nome:</label><br>
+        <input type="text" id="nome" name="nome" value="{{ registro.nome }}" required><br><br>
+
+        <label for="mensagem">Mensagem:</label><br>
+        <textarea id="mensagem" name="mensagem" required>{{ registro.mensagem }}</textarea><br><br>
+
+        <button type="submit">Salvar Alterações</button>
+    </form>
+</body>
+</html>

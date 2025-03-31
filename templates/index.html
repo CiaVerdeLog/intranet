@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intranet</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KyZXEJ6H7L7cL7gwnqz4O3mwV4k8LgGgf/1WvPceHlHkDa2IblO30oFGbz3F5zL" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .navbar {
+            background: #ffffff;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px 20px;
+        }
+        .menu-btn {
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100%;
+            background: #343a40;
+            padding-top: 60px;
+            transition: 0.3s;
+            z-index: 1000;
+        }
+        .sidebar a {
+            display: block;
+            padding: 15px;
+            color: white;
+            text-decoration: none;
+            font-size: 18px;
+        }
+        .sidebar a:hover {
+            background: #495057;
+        }
+        .sidebar.show {
+            left: 0;
+        }
+        .content {
+            transition: margin-left 0.3s;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .card img {
+            height: 200px;
+            object-fit: cover;
+        }
+        .btn-primary {
+            border-radius: 8px;
+        }
+        .menu-btn {
+            color: black;
+            font-size: 25px;
+            margin-left: 0px;
+            z-index: 999;
+        }
+
+        .form {
+            margin-top: -20px;
+        }
+
+        .logo {
+            width: 200px;
+            padding: 0;
+            margin: 0;
+            left: 50%;
+            transform: translateX(-505);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Menu lateral -->
+    <div class="sidebar" id="sidebar">
+        <a href="javascript:void(0)" onclick="toggleMenu()"><i class="fas fa-times"></i> Fechar</a>
+        <a href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Sair</a>
+        <a href="{{ url_for('login') }}"><i class="bi bi-person-circle"></i> Login</a>
+
+        {% if permissao == 'Adm' %}
+            <a href="{{ url_for('admin') }}"><i class="fas fa-user-cog"></i> Admin</a>
+        {% endif %}
+
+        {% if permissao %}
+            <a href="javascript:void(0)" onclick="mostrarOuvidoria()"><i class="fas fa-comments"></i> Ouvidoria</a>
+        {% endif %}
+
+        <a href="javascript:void(0)" onclick="mostrarConteudos()"><i class="fas fa-newspaper"></i> Conteúdos</a>
+        <a href="javascript:void(0)" onclick="mostrarVagas()"><i class="fas fa-briefcase"></i> Vagas</a>
+    </div>
+
+    <!-- Cabeçalho -->
+    <nav class="navbar navbar-light bg-white d-flex justify-content-between">
+        <span class="menu-btn" onclick="toggleMenu()">
+            <i class="fas fa-bars"></i>
+        </span>
+        <img class="logo" src="{{ url_for('static', filename='files/logo.png') }}" alt="Logo da Empresa">
+    </nav>
+
+    <!-- Conteúdo Principal -->
+    <div class="container mt-4 content" id="conteudo">
+        <h2 class="mb-4 text-center">Conteúdos</h2>
+        <div class="row">
+            {% for conteudo in conteudos %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card">
+                    {% if conteudo.caminho_foto %}
+                        <img src="{{ conteudo.caminho_foto }}" class="card-img-top" alt="Imagem">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ conteudo.titulo }}</h5>
+                        <p class="card-text">{{ conteudo.descricao }}</p>
+                        {% if conteudo.link %}
+                            <a href="{{ conteudo.link }}" target="_blank" class="btn btn-primary w-100">Saiba mais</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Tela de Vagas -->
+    <div class="container mt-4 content" id="vagas" style="display: none;">
+        <h2 class="mb-4 text-center">Vagas Disponíveis</h2>
+        <div class="row">
+            {% for vaga in vagas %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ vaga.titulo }}</h5>
+                        <p class="card-text">{{ vaga.descricao }}</p>
+                        {% if vaga.link %}
+                            <a href="{{ vaga.link }}" target="_blank" class="btn btn-primary w-100">Saiba mais</a>
+                        {% endif %}
+                        <p class="text-muted text-end mt-2">Criado em: {{ vaga.data_criacao }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Tela de Ouvidoria -->
+<div class="container mt-5" id="ouvidoria" style="display: none;">
+    <h2>Formulário de Ouvidoria</h2>
+    <form action="{{ url_for('salvar_ouvidoria') }}" method="POST">
+        <div class="mb-3">
+            <label for="nome_completo" class="form-label">Nome Completo:</label>
+            <input type="text" class="form-control" id="nome_completo" name="nome_completo" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="cpf" class="form-label">CPF:</label>
+            <input type="text" class="form-control" id="cpf" name="cpf" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="telefone" class="form-label">Telefone:</label>
+            <input type="text" class="form-control" id="telefone" name="telefone">
+        </div>
+
+        <div class="mb-3">
+            <label for="descricao" class="form-label">Descrição:</label>
+            <textarea class="form-control" id="descricao" name="descricao" rows="3" required></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Enviar</button>
+    </form>
+</div>
+
+
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        function toggleMenu() {
+            var sidebar = document.getElementById("sidebar");
+            sidebar.classList.toggle("show");
+        }
+
+        function mostrarVagas() {
+            // Fazer uma requisição para a rota que retorna as vagas em JSON
+            fetch('/api/vagas')
+                .then(response => response.json())
+                .then(vagas => {
+                    // Atualiza o conteúdo da página com as vagas
+                    let vagasDiv = document.getElementById("vagas");
+                    vagasDiv.innerHTML = '<h2 class="mb-4 text-center">Vagas Disponíveis</h2><div class="row">';
+                    
+                    if (vagas.length > 0) {
+                        // Criar o HTML das vagas
+                        vagas.forEach(vaga => {
+                            vagasDiv.innerHTML += `
+                                <div class="col-md-6 col-lg-4 mb-4">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">${vaga.titulo}</h5>
+                                            <p class="card-text">${vaga.descricao}</p>
+                                            ${vaga.link ? `<a href="${vaga.link}" target="_blank" class="btn btn-primary w-100">Saiba mais</a>` : ''}
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        vagasDiv.innerHTML += '</div>';
+                    } else {
+                        vagasDiv.innerHTML += '<p>Não há vagas disponíveis no momento.</p>';
+                    }
+    
+                    // Muda a exibição para mostrar as vagas e esconder os conteúdos
+                    document.getElementById("conteudo").style.display = "none";
+                    vagasDiv.style.display = "block";
+                })
+                .catch(error => console.error('Erro ao carregar as vagas:', error));
+    
+            toggleMenu();  // Fechar o menu lateral
+        }
+    
+        function mostrarConteudos() {
+            document.getElementById("conteudo").style.display = "block";
+            document.getElementById("vagas").style.display = "none";
+            toggleMenu();
+        }
+
+        function mostrarOuvidoria() {
+            // Mostra o formulário de Ouvidoria e esconde os outros conteúdos
+            document.getElementById("ouvidoria").style.display = "block";
+            document.getElementById("conteudo").style.display = "none";
+            document.getElementById("vagas").style.display = "none";
+            toggleMenu(); // Fechar o menu lateral
+        }
+
+        document.getElementById("form-ouvidoria").addEventListener("submit", function(event) {
+            event.preventDefault();
+            
+            const nome_completo = document.getElementById("nome_completo").value;
+            const cpf = document.getElementById("cpf").value;
+            const telefone = document.getElementById("telefone").value;
+            const descricao = document.getElementById("descricao").value;
+
+            // Enviar dados para o backend
+            fetch("/api/ouvidoria", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    nome_completo,
+                    cpf,
+                    telefone,
+                    descricao
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert("Sua mensagem foi enviada com sucesso!");
+                document.getElementById("form-ouvidoria").reset();
+                mostrarConteudos();  // Voltar para a tela de conteúdos
+            })
+            .catch(error => {
+                alert("Erro ao enviar a mensagem.");
+                console.error(error);
+            });
+        });
+
+    </script>
+</body>
+</html>
